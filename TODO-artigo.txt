@@ -1,0 +1,27 @@
+TÍTULO:
+
+AUTOR:
+
+RESUMO: 150 palavras
+"...
+Esse problema foi resolvido pelo método...
+Ideia dos resultados obtidos..."
+
+1) INTRODUÇÃO: incluindo revisão da literatura
+
+2) DESCRIÇÃO DO PROBLEMA
+
+3) MÉTODOS DESENVOLVIDOS
+3.1) REPRESENTAÇÃO DA SOLUÇÃO
+3.2) AVALIAÇÃO DA SOLUÇÃO
+3.3) GERAÇÃO DA SOLUÇÃO INICIAL
+3.4) ESTRUTURAS DE VIZINHANÇA
+3.5) BUSCAS LOCAIS
+3.6) ALGORITMOS DESENVOLVIDOS
+
+4) RESULTADO E DISCUSSÃO
+Ambiente utilizado para rodar o algoritmo, tabelas comparativas, etc
+
+5) CONCLUSÕES
+
+REFERÊNCIAS
