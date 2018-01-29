@@ -75,10 +75,8 @@ int main(int argc, char *argv[]){
     // fechando o arquivo de entrada
     file_in.close();
 
-    // for(int i = 0; i < node_list.size(); i++)
-    //     cout << node_list[i].getIndex() << ":\t" << node_list[i].getDemand() << "\t" << node_list[i].getX() << "\t" << node_list[i].getY() << endl;
+    /******************************/
 
-    /****************************/
     /* Matriz que armazena as distancias entre os Nós */
     vector< vector<double> > node_dist(node_list.size());
 
@@ -93,57 +91,23 @@ int main(int argc, char *argv[]){
         }
     }
 
-    /****************************/
-    /* Metodo Construtivo */
+    /******************************/
 
-    // Aleatorio
-    vector<Node> node_list_cpy = node_list;  // copia da lista de Nós
-    int index_aux, capacity_aux = 0;   // variaveis auxiliares
+    Solution solution1 = Solution();
 
-    // cout << node_list_cpy.size() << endl;
+    solution1.buildRandomSolution(CAPACITY, &node_list, &node_dist);
+    cout << "\tsolution1.value = " << solution1.getValue() << endl;
 
-    Solution solution = Solution();
-    Route route_aux = Route();
-    route_aux.addNode(node_list[0]);
+    solution1.tradeIntraRoute(&node_dist);
+    cout << "\tintra route" << endl;
+    cout << "\tsolution1.value = " << solution1.getValue() << endl;
 
-    srand(time(NULL));
-    for(int i = 0; i < node_list.size(); i++){
-        do{
-            if(node_list_cpy.size() == 1)   // caso a lista tenha tamanho 1, teremos apenas o Nó Deposito nela, logo devemos sair do laco
-                break;
-            index_aux = rand() % node_list_cpy.size();
-            usleep(100);
-        }while(index_aux == 0); // adiciona Nó aleatorio, desde que o Nó não seja o Depósito
+    solution1.tradeInterRoute(CAPACITY, &node_dist);
+    cout << "\tinter route" << endl;
+    cout << "\tsolution1.value = " << solution1.getValue() << endl;
 
-        if(node_list_cpy.size() == 1){  //  caso a lista tenha apenas o Nó Deposito, devemos finalizar a Construcao Aleatoria
-            route_aux.addNode(node_list[0]);
-            route_aux.setCost(route_aux.calculateCost(&node_dist));
-            solution.addRoute(route_aux);
-            break;  // sai do laco FOR
-        }
-
-        if(CAPACITY >= (capacity_aux + node_list_cpy[index_aux].getDemand())){
-            route_aux.addNode(node_list_cpy[index_aux]); // adiciona o Nó na rota
-            node_list_cpy.erase(node_list_cpy.begin() + index_aux);  // remove o Nó, adicionado a lista, da lista de Nós disponiveis
-            capacity_aux += node_list_cpy[index_aux].getDemand();
-        } else {
-            route_aux.addNode(node_list[0]); // adiciona o Deposito no final da Rota
-            route_aux.setCost(route_aux.calculateCost(&node_dist));   // calcula o Custo da Rota a ser adicionada a Solucao
-
-            solution.addRoute(route_aux);    // adiciona a Rota na Solucao
-
-            route_aux = Route();    // reinicia a Rota auxiliar
-            route_aux.addNode(node_list[0]); // adiciona o Deposito no inicio da Rota
-            route_aux.addNode(node_list_cpy[index_aux]); // adiciona o Nó na rota
-            node_list_cpy.erase(node_list_cpy.begin() + index_aux);  // remove o Nó, adicionado a lista, da lista de Nós disponiveis
-
-            capacity_aux = node_list_cpy[index_aux].getDemand();
-        }
-    }
-
-    solution.setValue(solution.calculateObjectiveFunction());
-
-    cout << endl << "\tsolution.value = " << solution.getValue() << endl;
+    // solution1.tradeBetweenRoute(CAPACITY, &node_dist);
+    // cout << "\tsolution1.value = " << solution1.getValue() << endl;
 
     return 0;
 }
