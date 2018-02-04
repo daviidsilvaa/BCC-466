@@ -25,6 +25,8 @@ Solution& Solution::operator=(const Solution& solution)
     this->value = solution.value;
     this->capacity = solution.capacity;
     this->routes = solution.routes;
+    this->node_list = solution.node_list;
+    this->node_distance = solution.node_distance;
     return *this;
 }
 
