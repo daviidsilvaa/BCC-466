@@ -23,7 +23,7 @@ public:
     int getCapacity();
 
     void addNode(const Node &node); // adiciona um Nó na Rota
-    double calculateCost(std::vector<std::vector<double> > *node_dist); // calcula o Custo da Rota
+    double calculateCost(std::vector<std::vector<double> > node_dist); // calcula o Custo da Rota
     void calculateCapacity();
 };
 

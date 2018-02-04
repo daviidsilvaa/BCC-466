@@ -32,12 +32,13 @@ int Route::getCapacity(){
     return this->capacity;
 }
 
-double Route::calculateCost(std::vector<std::vector<double> > *node_dist){
+double Route::calculateCost(std::vector<std::vector<double> > node_dist){
     this->cost = 0;
 
     for(int i = 0; i < nodes.size()-1; i++){
-        this->cost += (*node_dist)[this->nodes[i].getIndex()][this->nodes[i+1].getIndex()];
+        this->cost += node_dist[this->nodes[i].getIndex()][this->nodes[i+1].getIndex()];
     }
+    this->calculateCapacity();
 
     return this->cost;
 }

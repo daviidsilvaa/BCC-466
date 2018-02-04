@@ -92,22 +92,28 @@ int main(int argc, char *argv[]){
 
     /******************************/
 
-    Solution solution = Solution();
+    Solution solution = Solution(&node_list, &node_dist);
+    vector<Solution> possible_solutions;
     solution.setCapacity(CAPACITY);
 
-    solution.buildRandomSolution(&node_list, &node_dist);
+    solution.buildRandomSolution();
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    solution.tradeIntraRoute(&node_dist);
+    solution.tradeIntraRoute();
     cout << "\tintra route" << endl;
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    solution.tradeInterRoute(&node_dist);
+    solution.tradeInterRoute();
     cout << "\tinter route" << endl;
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    // soluition.tradeBetweenRoute(&node_dist);
-    // cout << "\tsoluition.value = " << soluition.getValue() << endl;
+    solution.tradeBetweenRoute();
+    cout << "\tbetween route" << endl;
+    cout << "\tsolution.value = " << solution.getValue() << endl;
+
+    //solution.improve("type"); First, Best, Random
+    //solution.improve();
+    cout << "\tsolution.value = " << solution.getValue() << endl;
 
     return 0;
 }
