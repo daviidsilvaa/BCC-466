@@ -1,8 +1,10 @@
 
 #include "Solution.hpp"
+#include <algorithm>
 #include <unistd.h>
 #include <stdlib.h>
 #include <iostream>
+#include <time.h>
 
 Solution::Solution(){
     this->value = 0.0;
@@ -10,14 +12,22 @@ Solution::Solution(){
 
 Solution::~Solution() { }
 
-void Solution::setValue(const double &value){
-    this->value = value;
+
+Solution& Solution::operator=(const Solution& solution)
+{
+    if(&solution == this)
+        return *this;
+
+    this->value = solution.value;
+    this->routes.clear();
+    for(int i = 0; i < solution.routes.size(); i++){
+        this->routes.push_back(solution.routes[i]);
+    }
+    return *this;
 }
+
 double Solution::getValue(){
     return this->value;
-}
-void Solution::sumValue(const double &sumValue){
-    this->value += sumValue;
 }
 
 void Solution::addRoute(const Route &route){
@@ -25,16 +35,19 @@ void Solution::addRoute(const Route &route){
 }
 
 double Solution::calculateObjectiveFunction(){
-    this->setValue(0.0);
+    this->value = 0.0;
     for(int i = 0; i < this->routes.size(); i++){
-        this->sumValue(routes[i].getCost());
+        this->value += routes[i].getCost();
     }
 
     return this->getValue();
 }
 
-void Solution::buildRandomSolution(const int &CAPACITY, const std::vector<Node> *node_list, std::vector< std::vector<double> > *node_dist){
-    std::vector<Node> node_list_cpy = (*node_list);  // copia da lista de Nós
+void Solution::buildRandomSolution(const int CAPACITY, std::vector<Node> *node_list, std::vector< std::vector<double> > *node_dist){
+    std::vector<Node> node_list_cpy;  // copia da lista de Nós
+    for(int i = 0; i < node_list->size(); i++){
+        node_list_cpy.push_back((*node_list)[i]);
+    }
     int index_aux, capacity_aux = 0;   // variaveis auxiliares
 
     // *this = Solution();
@@ -44,16 +57,14 @@ void Solution::buildRandomSolution(const int &CAPACITY, const std::vector<Node> 
 
     srand(time(NULL));
     for(int i = 0; i < (*node_list).size(); i++){
-        do{
-            if(node_list_cpy.size() == 1)   // caso a lista tenha tamanho 1, teremos apenas o Nó Deposito nela, logo devemos sair do laco
-            break;
-            index_aux = rand() % node_list_cpy.size();
-            usleep(100);
-        }while(index_aux == 0); // adiciona Nó aleatorio, desde que o Nó não seja o Depósito
+        if(node_list_cpy.size() > 1) // adiciona Nó aleatorio, desde que o Nó não seja o Depósito
+            index_aux = rand() % (node_list_cpy.size() - 1) + 1;
+        else
+            index_aux = 0;
 
         if(node_list_cpy.size() == 1){  //  caso a lista tenha apenas o Nó Deposito, devemos finalizar a Construcao Aleatoria
             route_aux.addNode((*node_list)[0]);
-            route_aux.setCost(route_aux.calculateCost(node_dist));
+            route_aux.calculateCost(node_dist);
             this->addRoute(route_aux);
             break;  // sai do laco FOR
         }
@@ -64,7 +75,7 @@ void Solution::buildRandomSolution(const int &CAPACITY, const std::vector<Node> 
             capacity_aux += node_list_cpy[index_aux].getDemand();
         } else {
             route_aux.addNode((*node_list)[0]); // adiciona o Deposito no final da Rota
-            route_aux.setCost(route_aux.calculateCost(node_dist));   // calcula o Custo da Rota a ser adicionada a Solucao
+            route_aux.calculateCost(node_dist);   // calcula o Custo da Rota a ser adicionada a Solucao !!!
 
             this->addRoute(route_aux);    // adiciona a Rota na Solucao
 
@@ -76,8 +87,7 @@ void Solution::buildRandomSolution(const int &CAPACITY, const std::vector<Node> 
             capacity_aux = node_list_cpy[index_aux].getDemand();
         }
     }
-
-    this->setValue(this->calculateObjectiveFunction());
+    this->calculateObjectiveFunction();
 }
 
 void Solution::tradeIntraRoute(std::vector< std::vector<double> > *node_dist){
@@ -119,7 +129,7 @@ void Solution::tradeIntraRoute(std::vector< std::vector<double> > *node_dist){
     route_aux.nodes[index_node[0]] = route_aux.nodes[index_node[1]];
     route_aux.nodes[index_node[1]] = node_aux;
 
-    route_aux.setCost(route_aux.calculateCost(node_dist));
+    route_aux.calculateCost(node_dist);
 
     if(route_aux.getCost() < this->routes[index_route].getCost()){
         this->routes[index_route] = route_aux;  // troca caso ocorra melhora
@@ -156,8 +166,8 @@ void Solution::tradeInterRoute(const int &CAPACITY, std::vector< std::vector<dou
     route_aux[0].nodes[index_node[0]] = route_aux[1].nodes[index_node[1]];
     route_aux[1].nodes[index_node[1]] = node_aux2;
 
-    route_aux[0].setCost(route_aux[0].calculateCost(node_dist));
-    route_aux[1].setCost(route_aux[1].calculateCost(node_dist));
+    route_aux[0].calculateCost(node_dist);
+    route_aux[1].calculateCost(node_dist);
 
     route_aux[0].calculateCapacity();   // calcula a soma da Demanda de todos os Nós da Rota
     route_aux[1].calculateCapacity();
@@ -197,12 +207,12 @@ void Solution::tradeBetweenRoute(const int &CAPACITY, std::vector< std::vector<d
 
     node_aux = route_aux[0].nodes[index_node];
     route_aux[0].nodes.erase(route_aux[0].nodes.begin() + index_node);
-    route_aux[0].setCost(route_aux[0].calculateCost(node_dist));
+    route_aux[0].calculateCost(node_dist);
 
     if((route_aux[1].getCapacity() + node_aux.getDemand()) < CAPACITY){ // verifica se a "Capacidade" da nova Rota satisfaz a do veiculo
         for(int i = 1; (i < route_aux[1].nodes.size() - 1) && (!out); i++){
             route_aux[1].nodes.insert(route_aux[1].nodes.begin() + i, node_aux);  // insere o Nó em um indice(crescente) da nova Rota
-            route_aux[1].setCost(route_aux[1].calculateCost(node_dist));    // calcula o Custo da nova Rota
+            route_aux[1].calculateCost(node_dist);    // calcula o Custo da nova Rota
 
             if(this->routes[index_route[1]].getCost() > route_aux[1].getCost()){
                 this->routes[index_route[0]] = route_aux[0];    // troca caso ocorra melhora

@@ -1,5 +1,4 @@
 
-#include "Route.hpp"
 #include "Solution.hpp"
 #include <fstream>
 #include <string.h>
@@ -81,7 +80,7 @@ int main(int argc, char *argv[]){
     vector< vector<double> > node_dist(node_list.size());
 
     for(int i = 0; i < node_dist.size(); i++)
-    node_dist[i].resize(node_list.size());
+        node_dist[i].resize(node_list.size());
 
     // calcula a distancia entre cada cidade
     for(int i = 0; i < node_list.size(); i++){
@@ -93,21 +92,21 @@ int main(int argc, char *argv[]){
 
     /******************************/
 
-    Solution solution1 = Solution();
+    Solution solution = Solution();
 
-    solution1.buildRandomSolution(CAPACITY, &node_list, &node_dist);
-    cout << "\tsolution1.value = " << solution1.getValue() << endl;
+    solution.buildRandomSolution(CAPACITY, &node_list, &node_dist);
+    cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    solution1.tradeIntraRoute(&node_dist);
+    solution.tradeIntraRoute(&node_dist);
     cout << "\tintra route" << endl;
-    cout << "\tsolution1.value = " << solution1.getValue() << endl;
+    cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    solution1.tradeInterRoute(CAPACITY, &node_dist);
+    solution.tradeInterRoute(CAPACITY, &node_dist);
     cout << "\tinter route" << endl;
-    cout << "\tsolution1.value = " << solution1.getValue() << endl;
+    cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    // solution1.tradeBetweenRoute(CAPACITY, &node_dist);
-    // cout << "\tsolution1.value = " << solution1.getValue() << endl;
+    // soluition.tradeBetweenRoute(CAPACITY, &node_dist);
+    // cout << "\tsoluition.value = " << soluition.getValue() << endl;
 
     return 0;
 }

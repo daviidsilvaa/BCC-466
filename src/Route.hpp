@@ -16,7 +16,6 @@ public:
     Route();
     ~Route();
 
-    void setCost(const double &cost);
     double getCost();
     void setDemand(const int &demand);
     int getDemand();

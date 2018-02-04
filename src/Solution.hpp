@@ -10,14 +10,13 @@ public:
 
     ~Solution();
 
-    void setValue(const double &value);
+    Solution& operator=(const Solution& solution);
+
     double getValue();
-    void sumValue(const double &sumValue);
+    double calculateObjectiveFunction();    // calcula o Valor da Funcao Objetivo
 
     void addRoute(const Route &route);
-
-    double calculateObjectiveFunction();    // calcula o Valor da Funcao Objetivo
-    void buildRandomSolution(const int &CAPACITY, const std::vector<Node> *node_list, std::vector< std::vector<double> > *node_dist);   // constroi Solucao Aleatoria
+    void buildRandomSolution(const int CAPACITY, std::vector<Node> *node_list, std::vector< std::vector<double> > *node_dist);   // constroi Solucao Aleatoria
 
     // metodos de troca
     void tradeIntraRoute(std::vector< std::vector<double> > *node_dist);    // troca intra-rota
