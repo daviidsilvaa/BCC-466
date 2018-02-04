@@ -8,6 +8,7 @@
 
 Solution::Solution(){
     this->value = 0.0;
+    this->capacity = 0.0;
 }
 
 Solution::~Solution() { }
@@ -19,11 +20,20 @@ Solution& Solution::operator=(const Solution& solution)
         return *this;
 
     this->value = solution.value;
+    this->capacity = solution.capacity;
     this->routes.clear();
     for(int i = 0; i < solution.routes.size(); i++){
         this->routes.push_back(solution.routes[i]);
     }
     return *this;
+}
+
+void Solution::setCapacity(const double capacity) {
+    this->capacity = capacity;
+}
+
+double Solution::getCapacity() {
+    return this->capacity;
 }
 
 double Solution::getValue(){
@@ -43,7 +53,7 @@ double Solution::calculateObjectiveFunction(){
     return this->getValue();
 }
 
-void Solution::buildRandomSolution(const int CAPACITY, std::vector<Node> *node_list, std::vector< std::vector<double> > *node_dist){
+void Solution::buildRandomSolution(std::vector<Node> *node_list, std::vector< std::vector<double> > *node_dist){
     std::vector<Node> node_list_cpy;  // copia da lista de Nós
     for(int i = 0; i < node_list->size(); i++){
         node_list_cpy.push_back((*node_list)[i]);
@@ -69,7 +79,7 @@ void Solution::buildRandomSolution(const int CAPACITY, std::vector<Node> *node_l
             break;  // sai do laco FOR
         }
 
-        if(CAPACITY >= (capacity_aux + node_list_cpy[index_aux].getDemand())){
+        if(this->capacity >= (capacity_aux + node_list_cpy[index_aux].getDemand())){
             route_aux.addNode(node_list_cpy[index_aux]); // adiciona o Nó na rota
             node_list_cpy.erase(node_list_cpy.begin() + index_aux);  // remove o Nó, adicionado a lista, da lista de Nós disponiveis
             capacity_aux += node_list_cpy[index_aux].getDemand();
@@ -137,7 +147,7 @@ void Solution::tradeIntraRoute(std::vector< std::vector<double> > *node_dist){
     }
 }
 
-void Solution::tradeInterRoute(const int &CAPACITY, std::vector< std::vector<double> > *node_dist){
+void Solution::tradeInterRoute(std::vector< std::vector<double> > *node_dist){
     srand(time(NULL));
 
     Route route_aux[2];   // variaveis auxiliares
@@ -172,7 +182,7 @@ void Solution::tradeInterRoute(const int &CAPACITY, std::vector< std::vector<dou
     route_aux[0].calculateCapacity();   // calcula a soma da Demanda de todos os Nós da Rota
     route_aux[1].calculateCapacity();
 
-    if((route_aux[0].getCapacity() < CAPACITY) && (route_aux[1].getCapacity() < CAPACITY)){ // verifica se a "Capacidade" da nova Rota satisfaz a do veiculo
+    if((route_aux[0].getCapacity() < this->capacity) && (route_aux[1].getCapacity() < this->capacity)){ // verifica se a "Capacidade" da nova Rota satisfaz a do veiculo
         if((route_aux[0].getCost() + route_aux[1].getCost()) < (this->routes[index_route[0]].getCost() + this->routes[index_route[1]].getCost())){
             this->routes[index_route[0]] = route_aux[0];  // troca caso ocorra melhora
             this->routes[index_route[1]] = route_aux[1];
@@ -182,7 +192,7 @@ void Solution::tradeInterRoute(const int &CAPACITY, std::vector< std::vector<dou
     }
 }
 
-void Solution::tradeBetweenRoute(const int &CAPACITY, std::vector< std::vector<double> > *node_dist){
+void Solution::tradeBetweenRoute(std::vector< std::vector<double> > *node_dist){
     srand(time(NULL));
 
     Route route_aux[2];   // variaveis auxiliares
@@ -209,7 +219,7 @@ void Solution::tradeBetweenRoute(const int &CAPACITY, std::vector< std::vector<d
     route_aux[0].nodes.erase(route_aux[0].nodes.begin() + index_node);
     route_aux[0].calculateCost(node_dist);
 
-    if((route_aux[1].getCapacity() + node_aux.getDemand()) < CAPACITY){ // verifica se a "Capacidade" da nova Rota satisfaz a do veiculo
+    if((route_aux[1].getCapacity() + node_aux.getDemand()) < this->capacity){ // verifica se a "Capacidade" da nova Rota satisfaz a do veiculo
         for(int i = 1; (i < route_aux[1].nodes.size() - 1) && (!out); i++){
             route_aux[1].nodes.insert(route_aux[1].nodes.begin() + i, node_aux);  // insere o Nó em um indice(crescente) da nova Rota
             route_aux[1].calculateCost(node_dist);    // calcula o Custo da nova Rota
