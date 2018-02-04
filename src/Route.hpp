@@ -7,20 +7,18 @@
 #include <iostream>
 
 class Route{
-public:
-    std::vector<Node> nodes;
+private:
     double cost;
-    int demand;
     int capacity;
 
+public:
+    std::vector<Node> nodes;
     Route();
     ~Route();
 
     double getCost();
-    void setDemand(const int &demand);
-    int getDemand();
-    void setCapacity(const int &capacity);
     int getCapacity();
+    std::vector<Node> getNodes();
 
     void addNode(const Node &node); // adiciona um Nó na Rota
     double calculateCost(std::vector<std::vector<double> > node_dist); // calcula o Custo da Rota

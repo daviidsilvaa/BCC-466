@@ -8,10 +8,12 @@
 #include <sstream>
 #include <math.h>
 #include <unistd.h>
+#include <time.h>
 
 using namespace std;
 
 int main(int argc, char *argv[]){
+    srand(time(NULL));
     fstream file_in;    // arquivo de entrada de dados
     string line;    // recebe cada linha do arquivo
     int index, DIMENSION, CAPACITY, vertice, coord_x, coord_y, aux;
@@ -99,6 +101,13 @@ int main(int argc, char *argv[]){
     solution.buildRandomSolution();
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
+    solution.moveInterRoute();
+    cout << "\tsolution.value = " << solution.getValue() << endl;
+
+    solution.moveInterRoute();
+    cout << "\tsolution.value = " << solution.getValue() << endl;
+
+    /*
     solution.tradeIntraRoute();
     cout << "\tintra route" << endl;
     cout << "\tsolution.value = " << solution.getValue() << endl;
@@ -110,10 +119,11 @@ int main(int argc, char *argv[]){
     solution.tradeBetweenRoute();
     cout << "\tbetween route" << endl;
     cout << "\tsolution.value = " << solution.getValue() << endl;
+    */
 
     //solution.improve("type"); First, Best, Random
     //solution.improve();
-    cout << "\tsolution.value = " << solution.getValue() << endl;
+    //cout << "\tsolution.value = " << solution.getValue() << endl;
 
     return 0;
 }

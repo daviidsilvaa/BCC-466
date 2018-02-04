@@ -14,22 +14,17 @@ Route::~Route(){ }
 double Route::getCost(){
     return this->cost;
 }
-void Route::setDemand(const int &demand){
-    this->demand = demand;
-}
-int Route::getDemand(){
-    return this->demand;
-}
 
 void Route::addNode(const Node &node){
     this->nodes.push_back(node);
 }
 
-void Route::setCapacity(const int &capacity){
-    this->capacity = capacity;
-}
 int Route::getCapacity(){
     return this->capacity;
+}
+
+std::vector<Node> Route::getNodes(){
+    return this->nodes;
 }
 
 double Route::calculateCost(std::vector<std::vector<double> > node_dist){

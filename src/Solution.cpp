@@ -2,7 +2,6 @@
 #include "Solution.hpp"
 #include <algorithm>
 #include <unistd.h>
-#include <time.h>
 
 Solution::Solution(){
     this->value = 0.0;
@@ -47,10 +46,8 @@ void Solution::addRoute(const Route &route){
 
 double Solution::calculateObjectiveFunction(){
     this->value = 0.0;
-    int used_capacity = 0;
     for(int i = 0; i < this->routes.size(); i++){
-        used_capacity += routes[i].getCapacity();
-        if(used_capacity > this->capacity)
+        if(routes[i].getCapacity() > this->capacity)
             this->value += routes[i].getCost() * 100;
         else
             this->value += routes[i].getCost();
@@ -68,7 +65,6 @@ void Solution::buildRandomSolution(){
     Route route_aux = Route();
     route_aux.addNode(this->node_list[0]);
 
-    srand(time(NULL));
     for(int i = 0; i < this->node_list.size(); i++){
         if(node_list_cpy.size() > 1) // adiciona Nó aleatorio, desde que o Nó não seja o Depósito
             index_aux = rand() % (node_list_cpy.size() - 1) + 1;
@@ -84,28 +80,23 @@ void Solution::buildRandomSolution(){
 
         if(this->capacity >= (capacity_aux + node_list_cpy[index_aux].getDemand())){
             route_aux.addNode(node_list_cpy[index_aux]); // adiciona o Nó na rota
-            node_list_cpy.erase(node_list_cpy.begin() + index_aux);  // remove o Nó, adicionado a lista, da lista de Nós disponiveis
             capacity_aux += node_list_cpy[index_aux].getDemand();
         } else {
             route_aux.addNode(this->node_list[0]); // adiciona o Deposito no final da Rota
             route_aux.calculateCost(this->node_distance);   // calcula o Custo da Rota a ser adicionada a Solucao !!!
-
             this->addRoute(route_aux);    // adiciona a Rota na Solucao
 
             route_aux = Route();    // reinicia a Rota auxiliar
             route_aux.addNode(this->node_list[0]); // adiciona o Deposito no inicio da Rota
             route_aux.addNode(node_list_cpy[index_aux]); // adiciona o Nó na rota
-            node_list_cpy.erase(node_list_cpy.begin() + index_aux);  // remove o Nó, adicionado a lista, da lista de Nós disponiveis
-
             capacity_aux = node_list_cpy[index_aux].getDemand();
         }
+        node_list_cpy.erase(node_list_cpy.begin() + index_aux);  // remove o Nó usado da lista de Nós disponiveis
     }
     this->calculateObjectiveFunction();
 }
 
 void Solution::tradeIntraRoute(){
-    srand(time(NULL));
-
     Route route_aux;   // variaveis auxiliares
     Node node_aux;
     bool out = false, neigh_node = true;
@@ -151,8 +142,6 @@ void Solution::tradeIntraRoute(){
 }
 
 void Solution::tradeInterRoute(){
-    srand(time(NULL));
-
     Route route_aux[2];   // variaveis auxiliares
     Node node_aux[2], node_aux2;
     bool out = false;
@@ -196,8 +185,6 @@ void Solution::tradeInterRoute(){
 }
 
 void Solution::tradeBetweenRoute(){
-    srand(time(NULL));
-
     Route route_aux[2];   // variaveis auxiliares
     Node node_aux;
     int index_route[2];
@@ -243,5 +230,35 @@ void Solution::tradeBetweenRoute(){
 
 
 void Solution::moveInterRoute(){
+    Route route_aux[2];   // variaveis auxiliares
+    Node node_aux;
+    int index_route[2];
+    int index_node[2];
 
+    index_route[0] = rand() % this->routes.size();   // elege uma Rota aleatoriamente
+    do{
+        index_route[1] = rand() % this->routes.size();  // elege outra Rota aleatoriamente, diferente da primeira Rota eleita
+        usleep(100);
+    }while(index_route[0] == index_route[1]);
+
+    route_aux[0] = this->routes[index_route[0]];
+    route_aux[1] = this->routes[index_route[1]];
+
+    index_node[0] = rand() % (route_aux[0].nodes.size() - 2) + 1;
+    index_node[1] = rand() % (route_aux[1].nodes.size() - 2) + 1;
+
+    node_aux = route_aux[0].nodes[index_node[0]];  // troca os Nós dentro da Rota auxiliar, ie, Rota copiada
+    route_aux[0].nodes[index_node[0]] = route_aux[1].nodes[index_node[1]];
+    route_aux[1].nodes[index_node[1]] = node_aux;
+
+    route_aux[0].calculateCost(this->node_distance);
+    route_aux[1].calculateCost(this->node_distance);
+
+    route_aux[0].calculateCapacity();   // calcula a soma da Demanda de todos os Nós da Rota
+    route_aux[1].calculateCapacity();
+
+    this->routes[index_route[0]] = route_aux[0];  // troca caso ocorra melhora
+    this->routes[index_route[1]] = route_aux[1];
+
+    this->calculateObjectiveFunction(); // atualiza valor da funcao Objetivo
 };
