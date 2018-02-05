@@ -54,7 +54,7 @@ double Solution::calculateObjectiveFunction(){
         else
             this->value += routes[i].getCost();
     }
-
+    this->value = int(this->value);
     return this->value;
 }
 
@@ -230,22 +230,53 @@ std::vector<Solution> Solution::generateKNeighbors(const int K){
     return solutions;
 }
 
-void Solution::VariableNeighborhoodSearch(const int max_iterations, const int K){
-    Solution solution_aux;
+void Solution::VariableNeighborhoodSearch(const int max_iterations, const int K, const int max_iter_wo_improv){
     std::vector<Solution> possible_solutions(K);
-    int iterator = 0;
+    int iterator = 0, iter_wo_improv = 0;
+    double best_value = this->value;
 
     while(iterator < max_iterations){
         iterator++;
         possible_solutions = this->generateKNeighbors(K);   // gera os k-vizinhos
+        best_value = this->value;
 
         for(int i=0; i < K; i++){
             // Best improvement dentro dos k-vizinhos
             if(possible_solutions[i].getValue() < this->getValue()){
                 this->routes = possible_solutions[i].routes;
                 this->calculateObjectiveFunction();
-                std::cout << "Melhor FO vizinho " << i << " iteracaoo " << iterator << ": " << this->value << std::endl;
+                std::cout << "Melhor FO vizinho " << i << " iteracao " << iterator << ": " << this->value << std::endl;
             }
         }
+
+        if(best_value == this->value){
+            iter_wo_improv++;
+        } else{
+            iter_wo_improv = 0;
+        }
+
+        if(iter_wo_improv >= max_iter_wo_improv){
+            //cachoalha
+        }
+
+        this->localSearch();
     }
+}
+
+void Solution::localSearch(){
+    for(int r=0; r < this->routes.size(); r++){
+        for(int n=0; n < this->routes[r].nodes.size(); n++){
+
+        }
+    }
+}
+
+void Solution::printSolution(){
+    for(int r=0; r < this->routes.size(); r++){
+        std::cout << "Route #" << r+1 << ": ";
+        for(int n=0; n < this->routes[r].nodes.size(); n++)
+            std::cout << this->routes[r].nodes[n].getIndex() << " ";
+        std::cout << std::endl;
+    }
+    std::cout << "Cost " << this->value << std::endl;
 }

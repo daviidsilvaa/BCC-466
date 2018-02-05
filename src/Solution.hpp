@@ -34,7 +34,9 @@ public:
     void moveBetweenRoute();
 
     std::vector<Solution> generateKNeighbors(const int K);
-    void VariableNeighborhoodSearch(const int max_iterations, const int K);
+    void VariableNeighborhoodSearch(const int max_iterations, const int K, const int max_iter_wo_improv);
+    void localSearch();
+    void printSolution();
 };
 
 #endif
