@@ -239,6 +239,8 @@ void Solution::moveIntraRoute(){
     route_aux = this->routes[index_route];
 
     index_node[0] = rand() % (route_aux.nodes.size() - 2) + 1;
+    if(route_aux.nodes.size() < 4)
+        return;
     do{
         index_node[1] = rand() % (route_aux.nodes.size() - 2) + 1;
     }while(index_node[1] == index_node[0]);
@@ -262,9 +264,10 @@ void Solution::moveInterRoute(){
     int index_node[2];
 
     index_route[0] = rand() % this->routes.size();   // elege uma Rota aleatoriamente
+    if(this->routes.size() < 2)
+        return;
     do{
         index_route[1] = rand() % this->routes.size();  // elege outra Rota aleatoriamente, diferente da primeira Rota eleita
-        usleep(100);
     }while(index_route[0] == index_route[1]);
 
     route_aux[0] = this->routes[index_route[0]];
@@ -296,9 +299,10 @@ void Solution::moveBetweenRoute(){
     int index_node[2];
 
     index_route[0] = rand() % this->routes.size();   // elege uma Rota aleatoriamente
+    if(this->routes.size() < 2)
+        return;
     do{
         index_route[1] = rand() % this->routes.size();  // elege outra Rota aleatoriamente, diferente da primeira Rota eleita
-        usleep(100);
     }while(index_route[0] == index_route[1]);
 
     route_aux[0] = this->routes[index_route[0]];
@@ -363,7 +367,7 @@ void Solution::VariableNeighborhoodSearch(const int max_iterations, const int K)
             if(possible_solutions[i].getValue() < this->getValue()){
                 this->routes = possible_solutions[i].routes;
                 this->calculateObjectiveFunction();
-                std::cout << "Melhor FO pelo vizinho " << i << " na iteracaoo " << iterator << ": " << this->value << std::endl;
+                std::cout << "Melhor FO vizinho " << i << " iteracaoo " << iterator << ": " << this->value << std::endl;
             }
         }
     }

@@ -103,7 +103,7 @@ int main(int argc, char *argv[]){
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
     solution_aux = solution;
-    solution.VariableNeighborhoodSearch(10, 100);
+    solution.VariableNeighborhoodSearch(100, 1000);
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
     //solution.moveIntraRoute();
