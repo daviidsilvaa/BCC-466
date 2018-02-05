@@ -36,6 +36,9 @@ public:
     void moveIntraRoute();
     void moveInterRoute();
     void moveBetweenRoute();
+
+    std::vector<Solution> generateKNeighbors(const int K);
+    void VariableNeighborhoodSearch(const int max_iterations, const int K);
 };
 
 #endif

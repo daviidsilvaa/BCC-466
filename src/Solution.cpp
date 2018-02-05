@@ -62,8 +62,6 @@ void Solution::buildRandomSolution(){
     std::vector<Node> node_list_cpy = this->node_list;
     int index_aux, capacity_aux = 0;   // variaveis auxiliares
 
-    // *this = Solution();
-
     Route route_aux = Route();
     route_aux.addNode(this->node_list[0]);
 
@@ -230,6 +228,32 @@ void Solution::tradeBetweenRoute(){
     this->calculateObjectiveFunction(); // atualiza valor da funcao Objetivo
 }
 
+void Solution::moveIntraRoute(){
+    Route route_aux;
+    Node node_aux;
+    int index_route;
+    int index_node[2];
+
+    index_route = rand() % this->routes.size();   // elege uma Rota aleatoriamente
+
+    route_aux = this->routes[index_route];
+
+    index_node[0] = rand() % (route_aux.nodes.size() - 2) + 1;
+    do{
+        index_node[1] = rand() % (route_aux.nodes.size() - 2) + 1;
+    }while(index_node[1] == index_node[0]);
+
+    node_aux = route_aux.nodes[index_node[0]];  // troca os Nós dentro da Rota auxiliar, ie, Rota copiada
+    route_aux.nodes[index_node[0]] = route_aux.nodes[index_node[1]];
+    route_aux.nodes[index_node[1]] = node_aux;
+
+    route_aux.calculateCost(this->node_distance);
+    route_aux.calculateCapacity();
+
+    this->routes[index_route] = route_aux;
+
+    this->calculateObjectiveFunction();
+};
 
 void Solution::moveInterRoute(){
     Route route_aux[2];   // variaveis auxiliares
@@ -259,8 +283,88 @@ void Solution::moveInterRoute(){
     route_aux[0].calculateCapacity();   // calcula a soma da Demanda de todos os Nós da Rota
     route_aux[1].calculateCapacity();
 
-    this->routes[index_route[0]] = route_aux[0];  // troca caso ocorra melhora
+    this->routes[index_route[0]] = route_aux[0];
     this->routes[index_route[1]] = route_aux[1];
 
     this->calculateObjectiveFunction(); // atualiza valor da funcao Objetivo
 };
+
+void Solution::moveBetweenRoute(){
+    Route route_aux[2];   // variaveis auxiliares
+    Node node_aux;
+    int index_route[2];
+    int index_node[2];
+
+    index_route[0] = rand() % this->routes.size();   // elege uma Rota aleatoriamente
+    do{
+        index_route[1] = rand() % this->routes.size();  // elege outra Rota aleatoriamente, diferente da primeira Rota eleita
+        usleep(100);
+    }while(index_route[0] == index_route[1]);
+
+    route_aux[0] = this->routes[index_route[0]];
+    route_aux[1] = this->routes[index_route[1]];
+
+    index_node[0] = rand() % (route_aux[0].nodes.size() - 2) + 1;
+    index_node[1] = rand() % (route_aux[1].nodes.size() - 2) + 1;
+
+    node_aux = route_aux[0].nodes[index_node[0]];  // troca os Nós dentro da Rota auxiliar, ie, Rota copiada
+    route_aux[0].nodes[index_node[0]] = route_aux[1].nodes[index_node[1]];
+    route_aux[1].nodes[index_node[1]] = node_aux;
+
+    route_aux[0].calculateCost(this->node_distance);
+    route_aux[1].calculateCost(this->node_distance);
+
+    route_aux[0].calculateCapacity();   // calcula a soma da Demanda de todos os Nós da Rota
+    route_aux[1].calculateCapacity();
+
+    this->routes[index_route[0]] = route_aux[0];
+    this->routes[index_route[1]] = route_aux[1];
+
+    this->calculateObjectiveFunction(); // atualiza valor da funcao Objetivo
+};
+
+std::vector<Solution> Solution::generateKNeighbors(const int K){
+    int move_option = 0;
+    std::vector<Solution> solutions(K);
+
+    for(int i = 0; i < K; i++){
+        solutions[i] = *this;
+
+        move_option = rand() % 3;  // elege qual movimento sera feito
+        usleep(100);
+
+        switch(move_option){
+            case 0: // troca posicao de dois nodes dentro da rota
+                solutions[i].moveIntraRoute();
+                break;
+            case 1: // troca node de uma rota com node de outra
+                solutions[i].moveInterRoute();
+                break;
+            case 2: // remove node de uma rota e adiciona na outra
+            default:
+                solutions[i].moveBetweenRoute();
+                break;
+        }
+    }
+    return solutions;
+}
+
+void Solution::VariableNeighborhoodSearch(const int max_iterations, const int K){
+    Solution solution_aux;
+    std::vector<Solution> possible_solutions(K);
+    int iterator = 0;
+
+    while(iterator < max_iterations){
+        iterator++;
+        possible_solutions = this->generateKNeighbors(K);   // gera os k-vizinhos
+
+        for(int i=0; i < K; i++){
+            // Best improvement dentro dos k-vizinhos
+            if(possible_solutions[i].getValue() < this->getValue()){
+                this->routes = possible_solutions[i].routes;
+                this->calculateObjectiveFunction();
+                std::cout << "Melhor FO pelo vizinho " << i << " na iteracaoo " << iterator << ": " << this->value << std::endl;
+            }
+        }
+    }
+}

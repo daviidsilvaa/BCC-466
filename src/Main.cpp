@@ -95,17 +95,19 @@ int main(int argc, char *argv[]){
     /******************************/
 
     Solution solution = Solution(&node_list, &node_dist);
+    Solution solution_aux;
     vector<Solution> possible_solutions;
     solution.setCapacity(CAPACITY);
 
     solution.buildRandomSolution();
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    solution.moveInterRoute();
+    solution_aux = solution;
+    solution.VariableNeighborhoodSearch(10, 100);
     cout << "\tsolution.value = " << solution.getValue() << endl;
 
-    solution.moveInterRoute();
-    cout << "\tsolution.value = " << solution.getValue() << endl;
+    //solution.moveIntraRoute();
+    //cout << "\tsolution.value = " << solution.getValue() << endl;
 
     /*
     solution.tradeIntraRoute();
