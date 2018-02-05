@@ -28,11 +28,7 @@ public:
 
     void buildRandomSolution();   // constroi Solucao Aleatoria
 
-    // metodos de troca
-    void tradeIntraRoute();    // troca intra-rota
-    void tradeInterRoute();    // troca inter-rota
-    void tradeBetweenRoute();    // troca inter-rota
-
+    // metodos de troca / gerar vizinhos
     void moveIntraRoute();
     void moveInterRoute();
     void moveBetweenRoute();
