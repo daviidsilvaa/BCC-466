@@ -328,26 +328,27 @@ void Solution::moveBetweenRoute(){
 };
 
 std::vector<Solution> Solution::generateKNeighbors(const int K){
-    int move_option = 0;
+    int move_option = 0, num_moves = 0;
     std::vector<Solution> solutions(K);
 
     for(int i = 0; i < K; i++){
         solutions[i] = *this;
 
-        move_option = rand() % 3;  // elege qual movimento sera feito
-        usleep(100);
-
-        switch(move_option){
-            case 0: // troca posicao de dois nodes dentro da rota
-                solutions[i].moveIntraRoute();
-                break;
-            case 1: // troca node de uma rota com node de outra
-                solutions[i].moveInterRoute();
-                break;
-            case 2: // remove node de uma rota e adiciona na outra
-            default:
-                solutions[i].moveBetweenRoute();
-                break;
+        num_moves = rand() % 5 + 1; // decide quantos movimentos esse vizinho vai fazer
+        for(int j=0; j < num_moves; j++) {
+            move_option = rand() % 3;  // elege qual movimento sera feito
+            switch (move_option) {
+                case 0: // troca posicao de dois nodes dentro da rota
+                    solutions[i].moveIntraRoute();
+                    break;
+                case 1: // troca node de uma rota com node de outra
+                    solutions[i].moveInterRoute();
+                    break;
+                case 2: // remove node de uma rota e adiciona na outra
+                default:
+                    solutions[i].moveBetweenRoute();
+                    break;
+            }
         }
     }
     return solutions;
