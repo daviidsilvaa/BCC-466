@@ -308,12 +308,16 @@ void Solution::moveBetweenRoute(){
     route_aux[0] = this->routes[index_route[0]];
     route_aux[1] = this->routes[index_route[1]];
 
-    index_node[0] = rand() % (route_aux[0].nodes.size() - 2) + 1;
+    if(route_aux[0].nodes.size() == 3){   // caso a Rota de origem tenha apenas um Nó válido
+        index_node[0] = 1;
+    } else {
+        index_node[0] = rand() % (route_aux[0].nodes.size() - 2) + 1;
+    }
+
     index_node[1] = rand() % (route_aux[1].nodes.size() - 2) + 1;
 
-    node_aux = route_aux[0].nodes[index_node[0]];  // troca os Nós dentro da Rota auxiliar, ie, Rota copiada
-    route_aux[0].nodes[index_node[0]] = route_aux[1].nodes[index_node[1]];
-    route_aux[1].nodes[index_node[1]] = node_aux;
+    route_aux[1].nodes.insert(route_aux[1].nodes.begin() + index_node[1], route_aux[0].nodes[index_node[0]]);    // insere o Nó na Rota de destino
+    route_aux[0].nodes.erase(route_aux[0].nodes.begin() + index_node[0]);     // remove o Nó da Rota de origem
 
     route_aux[0].calculateCost(this->node_distance);
     route_aux[1].calculateCost(this->node_distance);
@@ -321,8 +325,12 @@ void Solution::moveBetweenRoute(){
     route_aux[0].calculateCapacity();   // calcula a soma da Demanda de todos os Nós da Rota
     route_aux[1].calculateCapacity();
 
-    this->routes[index_route[0]] = route_aux[0];
     this->routes[index_route[1]] = route_aux[1];
+    if(route_aux[0].nodes.size() == 2){
+        this->routes.erase(this->routes.begin() + index_route[0]);  // deleta a Rota origem caso ela não tenha mais Nó não Depósito
+    } else {
+        this->routes[index_route[0]] = route_aux[0];
+    }
 
     this->calculateObjectiveFunction(); // atualiza valor da funcao Objetivo
 };
